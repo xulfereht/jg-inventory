@@ -1,0 +1,112 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Item {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  synonyms    String?     // JSON array as string
+  openUnit    String      @default("봉")
+  safetyStock Int         @default(5)
+  storage     String?
+  isFavorite  Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  lots        Lot[]
+  openEvents  OpenEvent[]
+  countItems  CountItem[]
+}
+
+model Supplier {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  contact   String?
+  leadTime  Int?
+  createdAt DateTime @default(now())
+  lots      Lot[]
+}
+
+model Lot {
+  id           String      @id @default(cuid())
+  itemId       String
+  supplierId   String?
+  purchaseDate DateTime
+  expiryDate   DateTime?
+  origin       String?
+  unitPrice    Float?
+  initialQty   Int
+  unopenedQty  Int
+  note         String?
+  createdAt    DateTime    @default(now())
+  item         Item        @relation(fields: [itemId], references: [id])
+  supplier     Supplier?   @relation(fields: [supplierId], references: [id])
+  openEvents   OpenEvent[]
+}
+
+model OpenEvent {
+  id        String   @id @default(cuid())
+  lotId     String
+  itemId    String
+  quantity  Int      @default(1)
+  userId    String?
+  location  String?
+  createdAt DateTime @default(now())
+  lot       Lot      @relation(fields: [lotId], references: [id])
+  item      Item     @relation(fields: [itemId], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String
+  before    String?
+  after     String?
+  createdAt DateTime @default(now())
+}
+
+// ── 실사/조정 (SPEC-003) ──
+
+model InventoryCount {
+  id           String      @id @default(cuid())
+  countDate    DateTime
+  status       String      @default("draft") // draft, submitted, approved
+  note         String?
+  createdBy    String?
+  approvedBy   String?
+  approvedAt   DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  countItems   CountItem[]
+}
+
+model CountItem {
+  id          String         @id @default(cuid())
+  countId     String
+  itemId      String
+  systemQty   Int
+  actualQty   Int?
+  difference  Int?
+  note        String?
+  count       InventoryCount @relation(fields: [countId], references: [id], onDelete: Cascade)
+  item        Item           @relation(fields: [itemId], references: [id])
+}
+
+// ── 알림 (SPEC-004) ──
+
+model Alert {
+  id         String    @id @default(cuid())
+  type       String    // low_stock, expiring_soon, expired, dead_stock
+  itemId     String?
+  lotId      String?
+  message    String
+  status     String    @default("active") // active, acknowledged, resolved
+  resolvedAt DateTime?
+  createdAt  DateTime  @default(now())
+}
