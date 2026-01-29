@@ -80,7 +80,12 @@ async function main() {
 
       for (const net of netInterface) {
         // Skip internal and non-IPv4 addresses
-        if (net.family === "IPv4" && !net.internal) {
+        // Only include private network ranges (192.168.x.x, 10.x.x.x)
+        if (
+          net.family === "IPv4" &&
+          !net.internal &&
+          (net.address.startsWith("192.168.") || net.address.startsWith("10."))
+        ) {
           addresses.push(net.address);
         }
       }

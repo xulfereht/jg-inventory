@@ -116,9 +116,43 @@ console.log(`   Database size: ${dbBuffer.length} bytes (${dbBase64.length} base
 const launcherCode = `
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
+const { exec } = require('child_process');
 
 // Embedded database (base64 encoded)
 const INIT_DB_BASE64 = "${dbBase64}";
+
+// Get local IP addresses (only private network IPs)
+function getLocalIPs() {
+  const nets = os.networkInterfaces();
+  const ips = [];
+  for (const name of Object.keys(nets)) {
+    for (const net of nets[name]) {
+      // Only IPv4, non-internal, and private network ranges
+      if (net.family === 'IPv4' && !net.internal) {
+        // Only include common private network ranges (192.168.x.x, 10.x.x.x)
+        if (net.address.startsWith('192.168.') || net.address.startsWith('10.')) {
+          ips.push(net.address);
+        }
+      }
+    }
+  }
+  return ips;
+}
+
+// Open URL in default browser
+function openBrowser(url) {
+  const platform = process.platform;
+  let cmd;
+  if (platform === 'win32') {
+    cmd = 'start ""';
+  } else if (platform === 'darwin') {
+    cmd = 'open';
+  } else {
+    cmd = 'xdg-open';
+  }
+  exec(cmd + ' ' + url);
+}
 
 // Determine base directory
 const baseDir = path.dirname(process.execPath);
@@ -127,12 +161,15 @@ const dbPath = path.join(baseDir, 'data.db');
 // Set DATABASE_URL before anything else (SQLite needs file: prefix with absolute path)
 process.env.DATABASE_URL = 'file:' + dbPath;
 
+const localIPs = getLocalIPs();
+const PORT = 3100;
+
 console.log('');
 console.log('========================================');
 console.log('  JG 한약재 재고관리 시스템');
 console.log('========================================');
 console.log('');
-console.log('  서버 주소: http://localhost:3100');
+console.log('  서버 주소: http://localhost:' + PORT);
 console.log('  데이터 위치: ' + dbPath);
 console.log('');
 
@@ -149,12 +186,23 @@ if (!fs.existsSync(dbPath)) {
   }
 }
 
-console.log('  다른 기기에서 접속하려면:');
-console.log('  http://[이 컴퓨터 IP]:3100');
+if (localIPs.length > 0) {
+  console.log('  다른 기기 접속 주소:');
+  localIPs.forEach(ip => {
+    console.log('  http://' + ip + ':' + PORT);
+  });
+} else {
+  console.log('  (네트워크 연결 없음)');
+}
 console.log('');
 console.log('  종료하려면 이 창을 닫으세요.');
 console.log('========================================');
 console.log('');
+
+// Open browser after a short delay
+setTimeout(() => {
+  openBrowser('http://localhost:' + PORT);
+}, 1500);
 
 // Start server
 require('./server.cjs');
