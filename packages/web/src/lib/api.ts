@@ -292,3 +292,16 @@ export async function exportInventoryData(): Promise<unknown> {
   const { data } = await client.get('/reports/export/inventory');
   return data;
 }
+
+// ── Server Info ──
+
+export interface ServerInfo {
+  port: number;
+  addresses: string[];
+  urls: string[];
+}
+
+export async function getServerInfo(): Promise<ServerInfo> {
+  const { data } = await client.get<ServerInfo>('/server-info');
+  return data;
+}

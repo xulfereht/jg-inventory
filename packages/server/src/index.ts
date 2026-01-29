@@ -1,6 +1,7 @@
 import { existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { networkInterfaces } from "os";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
@@ -67,6 +68,30 @@ async function main() {
     status: "ok",
     timestamp: new Date().toISOString(),
   }));
+
+  // Server info (for displaying local IP addresses)
+  app.get("/api/server-info", async () => {
+    const nets = networkInterfaces();
+    const addresses: string[] = [];
+
+    for (const name of Object.keys(nets)) {
+      const netInterface = nets[name];
+      if (!netInterface) continue;
+
+      for (const net of netInterface) {
+        // Skip internal and non-IPv4 addresses
+        if (net.family === "IPv4" && !net.internal) {
+          addresses.push(net.address);
+        }
+      }
+    }
+
+    return {
+      port: PORT,
+      addresses,
+      urls: addresses.map(addr => `http://${addr}:${PORT}`),
+    };
+  });
 
   // Serve static frontend files
   const staticPath = getStaticPath();
