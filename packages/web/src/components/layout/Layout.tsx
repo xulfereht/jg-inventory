@@ -253,7 +253,7 @@ export function Layout({ children }: LayoutProps) {
 
           {/* Copyright */}
           <div className="text-center pt-1">
-            <p className="text-[10px] text-neutral-400">JG Inventory v0.1.0</p>
+            <p className="text-[10px] text-neutral-400">JG Inventory v0.2.0</p>
             <a
               href="https://aimo.liveklass.com/classes/284812"
               target="_blank"
