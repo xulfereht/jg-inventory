@@ -6,6 +6,7 @@ import {
   Star,
   AlertTriangle,
   Clock,
+  Sparkles,
 } from 'lucide-react';
 import { getItems, getOpenEvents, createOpenEvent } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
@@ -99,14 +100,14 @@ export function OpenDashboardPage() {
   );
 
   return (
-    <div>
+    <div className="space-y-6">
       {/* Notification Banner */}
       {notification && (
         <div
-          className={`mb-4 rounded-lg px-4 py-3 text-sm font-medium ${
+          className={`animate-fade-in rounded-xl px-4 py-3 text-sm font-medium shadow-soft ${
             notification.type === 'success'
-              ? 'border border-emerald-200 bg-emerald-50 text-emerald-800'
-              : 'border border-red-200 bg-red-50 text-red-800'
+              ? 'border border-success-500/20 bg-success-50 text-success-700'
+              : 'border border-error-500/20 bg-error-50 text-error-700'
           }`}
           role="status"
           aria-live="polite"
@@ -116,41 +117,54 @@ export function OpenDashboardPage() {
       )}
 
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <PackageOpen className="h-6 w-6 text-emerald-600" />
-        <h2 className="page-title">오픈 차감</h2>
+      <div>
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-100">
+            <PackageOpen className="h-5 w-5 text-accent-600" />
+          </div>
+          <div>
+            <h2 className="page-title">오픈 차감</h2>
+            <p className="text-sm text-neutral-500">
+              품목을 선택하여 오픈 차감합니다. FEFO 원칙에 따라 자동 선택됩니다.
+            </p>
+          </div>
+        </div>
       </div>
-      <p className="page-description">
-        품목을 선택하여 오픈 차감합니다. FEFO 원칙에 따라 자동 선택됩니다.
-      </p>
 
       {/* Search */}
-      <div className="relative mt-6">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+      <div className="relative">
+        <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
         <input
           type="text"
           placeholder="품목명 검색..."
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          className="flex h-10 w-full rounded-lg border border-neutral-300 bg-white py-2 pl-10 pr-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+          className="flex h-11 w-full rounded-xl border border-neutral-300 bg-white py-2 pl-11 pr-4 text-sm text-neutral-900 shadow-soft transition-colors placeholder:text-neutral-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
           aria-label="품목명 검색"
         />
       </div>
 
       {/* Search results */}
       {debouncedSearch && (
-        <div className="mt-6">
-          <h3 className="text-sm font-semibold text-neutral-600">검색 결과</h3>
+        <section className="space-y-4">
+          <h3 className="section-title">
+            <Search className="h-4 w-4 text-neutral-400" />
+            검색 결과
+          </h3>
           {isSearching ? (
-            <div className="mt-4 text-center">
-              <div className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-primary-600 border-t-transparent" />
+            <div className="flex items-center justify-center py-8">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary-600 border-t-transparent" />
             </div>
           ) : searchResults.length === 0 ? (
-            <p className="mt-3 text-sm text-neutral-500">
-              검색 결과가 없습니다.
-            </p>
+            <div className="empty-state py-8">
+              <Search className="empty-state-icon" />
+              <p className="empty-state-title">검색 결과가 없습니다</p>
+              <p className="empty-state-description">
+                다른 검색어로 시도해보세요.
+              </p>
+            </div>
           ) : (
-            <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {searchResults.map((item) => (
                 <OpenItemCard
                   key={item.id}
@@ -164,17 +178,17 @@ export function OpenDashboardPage() {
               ))}
             </div>
           )}
-        </div>
+        </section>
       )}
 
       {/* Favorites section */}
       {!debouncedSearch && favorites.length > 0 && (
-        <div className="mt-6">
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-amber-700">
-            <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+        <section className="space-y-4">
+          <h3 className="section-title text-warning-700">
+            <Star className="h-4 w-4 fill-warning-400 text-warning-400" />
             즐겨찾기
           </h3>
-          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {favorites.map((item) => (
               <OpenItemCard
                 key={item.id}
@@ -187,61 +201,60 @@ export function OpenDashboardPage() {
               />
             ))}
           </div>
-        </div>
+        </section>
       )}
 
       {/* No favorites message */}
       {!debouncedSearch && favorites.length === 0 && (
-        <div className="mt-6 rounded-xl border border-dashed border-neutral-300 bg-white p-8 text-center">
-          <Star className="mx-auto h-10 w-10 text-neutral-300" />
-          <p className="mt-3 text-sm text-neutral-500">
-            즐겨찾기에 등록된 품목이 없습니다.
-          </p>
-          <p className="mt-1 text-xs text-neutral-400">
-            품목 관리에서 자주 사용하는 품목을 즐겨찾기에 추가하세요.
-          </p>
-        </div>
+        <Card variant="outline" className="border-dashed">
+          <div className="empty-state py-10">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-warning-50">
+              <Sparkles className="h-6 w-6 text-warning-400" />
+            </div>
+            <p className="empty-state-title">즐겨찾기에 등록된 품목이 없습니다</p>
+            <p className="empty-state-description">
+              품목 관리에서 자주 사용하는 품목을 즐겨찾기에 추가하세요.
+            </p>
+          </div>
+        </Card>
       )}
 
       {/* Recent open events */}
-      <div className="mt-8">
-        <h3 className="flex items-center gap-2 text-sm font-semibold text-neutral-700">
+      <section className="space-y-4">
+        <h3 className="section-title">
           <Clock className="h-4 w-4 text-neutral-400" />
           최근 오픈 이력
         </h3>
         {recentEvents.length === 0 ? (
-          <p className="mt-3 text-sm text-neutral-500">
-            오픈 이력이 없습니다.
-          </p>
+          <p className="text-sm text-neutral-500 py-2">오픈 이력이 없습니다.</p>
         ) : (
-          <div className="mt-3 space-y-2">
+          <div className="space-y-2">
             {recentEvents.map((event) => (
-              <div
-                key={event.id}
-                className="flex items-center justify-between rounded-lg border border-neutral-200 bg-white px-4 py-3"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50">
-                    <PackageOpen className="h-4 w-4 text-emerald-600" />
+              <Card key={event.id} variant="outline" className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-50">
+                      <PackageOpen className="h-4 w-4 text-accent-600" />
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium text-neutral-900">
+                        {event.item.name}
+                      </span>
+                      <span className="ml-2 text-sm text-neutral-500">
+                        {event.quantity}
+                        {event.item.openUnit} 오픈
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-sm font-medium text-neutral-900">
-                      {event.item.name}
-                    </span>
-                    <span className="ml-2 text-sm text-neutral-500">
-                      {event.quantity}
-                      {event.item.openUnit} 오픈
-                    </span>
-                  </div>
+                  <span className="text-xs text-neutral-400">
+                    {formatRelativeTime(event.createdAt)}
+                  </span>
                 </div>
-                <span className="text-xs text-neutral-400">
-                  {formatRelativeTime(event.createdAt)}
-                </span>
-              </div>
+              </Card>
             ))}
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 }
@@ -261,7 +274,7 @@ function OpenItemCard({
   const isLowStock = item.currentStock > 0 && item.currentStock <= 3;
 
   return (
-    <Card className="flex flex-col p-4">
+    <Card hover className="flex flex-col p-4">
       <div className="flex-1">
         <h4 className="truncate text-sm font-semibold text-neutral-900">
           {item.name}
@@ -271,9 +284,9 @@ function OpenItemCard({
           <span
             className={`text-sm font-bold ${
               isZeroStock
-                ? 'text-red-600'
+                ? 'text-error-600'
                 : isLowStock
-                  ? 'text-amber-600'
+                  ? 'text-warning-600'
                   : 'text-neutral-900'
             }`}
           >
@@ -281,7 +294,7 @@ function OpenItemCard({
           </span>
           <span className="text-xs text-neutral-400">{item.openUnit}</span>
           {isLowStock && (
-            <Badge variant="warning" className="ml-1 gap-1">
+            <Badge variant="warning" size="sm" className="ml-1">
               <AlertTriangle className="h-3 w-3" />
               부족
             </Badge>
@@ -295,16 +308,13 @@ function OpenItemCard({
           onOpen();
         }}
         disabled={isZeroStock || isOpenPending}
-        className={`mt-3 w-full ${
-          isZeroStock
-            ? ''
-            : 'bg-emerald-600 hover:bg-emerald-700 focus-visible:ring-emerald-500'
-        }`}
+        variant={isZeroStock ? 'secondary' : 'success'}
+        className="mt-3 w-full"
         size="lg"
         aria-label={`${item.name} 오픈`}
       >
         {isOpenPending ? (
-          <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
         ) : isZeroStock ? (
           '재고 없음'
         ) : (

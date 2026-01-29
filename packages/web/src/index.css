@@ -4,32 +4,43 @@
 
 @layer base {
   :root {
-    --color-background: 0 0% 100%;
-    --color-foreground: 0 0% 7%;
+    /* Background & Foreground */
+    --color-background: 30 6% 98%;
+    --color-foreground: 20 14% 10%;
 
+    /* Card */
     --color-card: 0 0% 100%;
-    --color-card-foreground: 0 0% 7%;
+    --color-card-foreground: 20 14% 10%;
 
-    --color-primary: 221 83% 53%;
-    --color-primary-foreground: 210 40% 98%;
+    /* Primary: Amber */
+    --color-primary: 38 92% 50%;
+    --color-primary-foreground: 0 0% 100%;
 
-    --color-secondary: 210 40% 96%;
-    --color-secondary-foreground: 222 47% 11%;
+    /* Secondary */
+    --color-secondary: 30 6% 94%;
+    --color-secondary-foreground: 20 14% 10%;
 
-    --color-muted: 210 40% 96%;
-    --color-muted-foreground: 215 16% 47%;
+    /* Muted */
+    --color-muted: 30 6% 94%;
+    --color-muted-foreground: 25 5% 45%;
 
-    --color-accent: 210 40% 96%;
-    --color-accent-foreground: 222 47% 11%;
+    /* Accent: Emerald */
+    --color-accent: 160 84% 39%;
+    --color-accent-foreground: 0 0% 100%;
 
+    /* Destructive */
     --color-destructive: 0 84% 60%;
-    --color-destructive-foreground: 210 40% 98%;
+    --color-destructive-foreground: 0 0% 100%;
 
-    --color-border: 214 32% 91%;
-    --color-input: 214 32% 91%;
-    --color-ring: 221 83% 53%;
+    /* Border & Input */
+    --color-border: 30 6% 87%;
+    --color-input: 30 6% 87%;
+    --color-ring: 38 92% 50%;
 
-    --radius: 0.5rem;
+    /* Radius */
+    --radius: 0.75rem;
+    --radius-sm: 0.5rem;
+    --radius-lg: 1rem;
   }
 
   * {
@@ -40,9 +51,15 @@
     @apply bg-neutral-50 text-neutral-900 antialiased;
     font-feature-settings: 'rlig' 1, 'calt' 1;
   }
+
+  /* Focus ring 스타일 */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary-500/30 ring-offset-2;
+  }
 }
 
 @layer components {
+  /* Page Layout */
   .page-container {
     @apply mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8;
   }
@@ -53,5 +70,130 @@
 
   .page-description {
     @apply mt-1 text-sm text-neutral-500;
+  }
+
+  /* Card Variants */
+  .card {
+    @apply rounded-xl border border-neutral-200 bg-white shadow-soft;
+  }
+
+  .card-hover {
+    @apply card transition-all duration-200 hover:shadow-medium hover:border-neutral-300;
+  }
+
+  /* Section Headers */
+  .section-title {
+    @apply flex items-center gap-2 text-sm font-semibold text-neutral-700;
+  }
+
+  /* Form Styles */
+  .form-label {
+    @apply block text-sm font-medium text-neutral-700 mb-1.5;
+  }
+
+  .form-hint {
+    @apply text-xs text-neutral-500 mt-1;
+  }
+
+  .form-error {
+    @apply text-xs text-error-600 mt-1;
+  }
+
+  /* Data Display */
+  .stat-value {
+    @apply text-2xl font-bold text-neutral-900;
+  }
+
+  .stat-label {
+    @apply text-sm text-neutral-500;
+  }
+
+  /* Status Indicators */
+  .status-dot {
+    @apply inline-block w-2 h-2 rounded-full;
+  }
+
+  .status-dot-success {
+    @apply status-dot bg-success-500;
+  }
+
+  .status-dot-warning {
+    @apply status-dot bg-warning-500;
+  }
+
+  .status-dot-error {
+    @apply status-dot bg-error-500;
+  }
+
+  /* Table Styles */
+  .table-header {
+    @apply bg-neutral-50 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500;
+  }
+
+  .table-cell {
+    @apply px-4 py-3 text-sm text-neutral-900;
+  }
+
+  .table-row {
+    @apply border-b border-neutral-100 transition-colors hover:bg-neutral-50/50;
+  }
+
+  /* Empty State */
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-12 text-center;
+  }
+
+  .empty-state-icon {
+    @apply h-12 w-12 text-neutral-300;
+  }
+
+  .empty-state-title {
+    @apply mt-4 text-sm font-medium text-neutral-900;
+  }
+
+  .empty-state-description {
+    @apply mt-1 text-sm text-neutral-500;
+  }
+}
+
+@layer utilities {
+  /* Scrollbar Styles */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.neutral.300') transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: theme('colors.neutral.300');
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: theme('colors.neutral.400');
+  }
+
+  /* Animation */
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }

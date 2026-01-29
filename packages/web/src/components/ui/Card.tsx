@@ -1,14 +1,35 @@
 import { forwardRef, type HTMLAttributes } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
-export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
+const cardVariants = cva('rounded-xl border bg-white', {
+  variants: {
+    variant: {
+      default: 'border-neutral-200 shadow-soft',
+      elevated: 'border-neutral-200 shadow-medium',
+      outline: 'border-neutral-200',
+      ghost: 'border-transparent',
+    },
+    hover: {
+      true: 'transition-all duration-200 hover:shadow-medium hover:border-neutral-300',
+      false: '',
+    },
+  },
+  defaultVariants: {
+    variant: 'default',
+    hover: false,
+  },
+});
+
+export interface CardProps
+  extends HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof cardVariants> {}
+
+export const Card = forwardRef<HTMLDivElement, CardProps>(
+  ({ className, variant, hover, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn(
-        'rounded-xl border border-neutral-200 bg-white shadow-sm',
-        className,
-      )}
+      className={cn(cardVariants({ variant, hover, className }))}
       {...props}
     />
   ),
@@ -21,7 +42,7 @@ export const CardHeader = forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('flex flex-col space-y-1.5 px-6 pt-6', className)}
+    className={cn('flex flex-col space-y-1.5 p-6', className)}
     {...props}
   />
 ));
@@ -58,7 +79,7 @@ export const CardContent = forwardRef<
   HTMLDivElement,
   HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn('px-6 pb-6 pt-0', className)} {...props} />
+  <div ref={ref} className={cn('p-6 pt-0', className)} {...props} />
 ));
 CardContent.displayName = 'CardContent';
 
@@ -68,8 +89,10 @@ export const CardFooter = forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('flex items-center px-6 pb-6 pt-0', className)}
+    className={cn('flex items-center p-6 pt-0', className)}
     {...props}
   />
 ));
 CardFooter.displayName = 'CardFooter';
+
+export { cardVariants };
