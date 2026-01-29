@@ -280,6 +280,24 @@ export function Layout({ children }: LayoutProps) {
                 </div>
               </section>
 
+              {/* Firewall Troubleshooting */}
+              <section>
+                <h3 className="font-semibold text-neutral-800 mb-2">다른 기기에서 접속이 안 될 때</h3>
+                <div className="rounded-lg bg-amber-50 p-3 space-y-2">
+                  <p className="text-amber-800 text-sm font-medium">
+                    Windows 방화벽 설정 확인
+                  </p>
+                  <ol className="list-decimal list-inside text-xs text-amber-700 space-y-1">
+                    <li>프로그램 첫 실행 시 "네트워크 액세스 허용" 팝업에서 <strong>허용</strong> 클릭</li>
+                    <li>팝업을 놓쳤다면: Windows 검색 → "방화벽" → "앱 허용"</li>
+                    <li>"설정 변경" → jg-inventory-win.exe 찾기 → <strong>개인</strong> 체크</li>
+                  </ol>
+                  <p className="text-amber-600 text-xs mt-2">
+                    * 서버 PC에서 본인 IP로 접속은 되는데 다른 기기에서 안 되면 방화벽 문제입니다.
+                  </p>
+                </div>
+              </section>
+
               {/* Tips */}
               <section>
                 <h3 className="font-semibold text-neutral-800 mb-2">팁</h3>
